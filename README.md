@@ -8,7 +8,7 @@ This is a real-time live translator application built using Python, PyQt5, and A
 - **Subtitle Overlay**: Displays translated text as subtitles over all applications.
 - **Configurable Input/Output Languages**: Users can specify input and output languages.
 - **Audio Device Selection**: Users can choose from available audio devices.
-- **Configuration Persistence**: Saves user preferences for input/output languages and selected audio device.
+- **Configuration Persistence**: Saves user preferences for input/output languages, selected audio device, and Azure settings.
 - **Customization Options**: Customize the subtitle overlay's font, color, and appearance.
 - **Settings Management**: Reset settings to default, import/export settings.
 
@@ -77,13 +77,7 @@ This is a real-time live translator application built using Python, PyQt5, and A
 
 1. Obtain an Azure Cognitive Services subscription key and service region. You can create a free account [here](https://azure.microsoft.com/en-us/services/cognitive-services/speech-to-text/).
 
-2. Update the Azure subscription key and region in the code:
-
-    ```python
-    speech_config = speechsdk.SpeechConfig(subscription="YourAzureSubscriptionKey", region="YourServiceRegion")
-    ```
-
-3. Optionally, you can create a `config.json` file to save your settings:
+2. Create a `config.json` file with your settings:
 
     ```json
     {
@@ -91,7 +85,9 @@ This is a real-time live translator application built using Python, PyQt5, and A
         "output_language": "es-ES",
         "audio_device_index": 0,
         "subtitle_font": "Arial,24",
-        "subtitle_color": "#FFFFFF"
+        "subtitle_color": "#FFFFFF",
+        "azure_subscription_key": "YourAzureSubscriptionKey",
+        "azure_region": "YourServiceRegion"
     }
     ```
 
