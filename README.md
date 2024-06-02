@@ -14,24 +14,54 @@ This is a real-time live translator application built using Python, PyQt5, and A
 
 ## Requirements
 
-- Python 3.x
-- `pyaudio`
-- `numpy`
-- `scipy`
-- `azure-cognitiveservices-speech`
-- `PyQt5`
+- `pyenv`
+- `pyenv-virtualenv`
 - A valid Azure Cognitive Services subscription key and service region.
 
 ## Installation
 
-1. Clone this repository:
+1. **Install `pyenv` and `pyenv-virtualenv`**:
+
+    Follow the instructions [here](https://github.com/pyenv/pyenv#installation) to install `pyenv`.
+
+    Additionally, install `pyenv-virtualenv` by following the instructions [here](https://github.com/pyenv/pyenv-virtualenv#installation).
+
+2. **Clone this repository**:
 
     ```sh
     git clone https://github.com/yourusername/repo-name.git
     cd repo-name
     ```
 
-2. Install the required packages:
+3. **Set up a Python version with `pyenv`**:
+
+    Install a specific Python version (e.g., 3.8.10):
+
+    ```sh
+    pyenv install 3.8.10
+    ```
+
+    Set the local Python version for this project:
+
+    ```sh
+    pyenv local 3.8.10
+    ```
+
+4. **Create and activate a virtual environment with `pyenv-virtualenv`**:
+
+    Create a virtual environment:
+
+    ```sh
+    pyenv virtualenv 3.8.10 translator-env
+    ```
+
+    Activate the virtual environment:
+
+    ```sh
+    pyenv activate translator-env
+    ```
+
+5. **Install the required packages**:
 
     ```sh
     pip install -r requirements.txt
