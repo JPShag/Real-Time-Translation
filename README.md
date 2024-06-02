@@ -104,25 +104,3 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```
-
-### Final Steps
-
-- **Update GitHub**:
-    1. Make sure your local repository has the updated `README.md`.
-    2. Add, commit, and push the changes:
-        ```sh
-        git add README.md
-        git commit -m "Updated README for version 0.1.1"
-        git push origin main
-        ```
-
-- **Update PyPI**:
-    1. Rebuild the package:
-        ```sh
-        python -m build
-        ```
-    2. Upload the new version to PyPI:
-        ```sh
-        twine upload dist/*
-        ```
