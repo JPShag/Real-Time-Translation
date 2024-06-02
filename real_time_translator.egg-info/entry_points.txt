@@ -1,0 +1,2 @@
+[console_scripts]
+real-time-translator = real_time_translator.main:main
