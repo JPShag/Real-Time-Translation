@@ -93,7 +93,7 @@ class TranslatorApp(QWidget):
         self.audio_device_combo.clear()
         for i in range(p.get_device_count()):
             device_info = p.get_device_info_by_index(i)
-            if device_info.get('hostApi') == p.get_host_api_info_by_type(pyaudio.paWASAPI)['index']:
+            if device_info.get('maxInputChannels') > 0:
                 self.audio_device_combo.addItem(device_info.get('name'), i)
         p.terminate()
 
@@ -161,16 +161,15 @@ class TranslatorApp(QWidget):
         try:
             device_index = self.audio_device_combo.currentData()
             if device_index is None:
-                raise Exception("WASAPI loopback device not found.")
+                raise Exception("Selected audio device not found.")
             
             stream = p.open(format=FORMAT,
                             channels=CHANNELS,
                             rate=RATE,
                             input=True,
                             frames_per_buffer=CHUNK,
-                            input_device_index=device_index,
-                            as_loopback=True)
-            logging.info("Audio capture started using WASAPI loopback.")
+                            input_device_index=device_index)
+            logging.info("Audio capture started using selected device.")
 
             while self.running:
                 data = stream.read(CHUNK)
