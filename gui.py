@@ -207,3 +207,7 @@ class TranslatorApp(QWidget):
         error_dialog.setText(message)
         error_dialog.setWindowTitle("Error")
         error_dialog.exec_()
+<<<<<<< HEAD
+=======
+
+>>>>>>> c46d0b96093e30607a181ef9b6d940da3a6417f0
