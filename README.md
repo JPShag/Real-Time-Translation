@@ -9,6 +9,8 @@ This is a real-time live translator application built using Python, PyQt5, and A
 - **Configurable Input/Output Languages**: Users can specify input and output languages.
 - **Audio Device Selection**: Users can choose from available audio devices.
 - **Configuration Persistence**: Saves user preferences for input/output languages and selected audio device.
+- **Customization Options**: Customize the subtitle overlay's font, color, and appearance.
+- **Settings Management**: Reset settings to default, import/export settings.
 
 ## Requirements
 
@@ -57,7 +59,9 @@ This is a real-time live translator application built using Python, PyQt5, and A
     {
         "input_language": "en-US",
         "output_language": "es-ES",
-        "audio_device_index": 0
+        "audio_device_index": 0,
+        "subtitle_font": "Arial,24",
+        "subtitle_color": "#FFFFFF"
     }
     ```
 
@@ -76,6 +80,8 @@ This is a real-time live translator application built using Python, PyQt5, and A
 4. The translated text will be displayed in the GUI and as a subtitle overlay on top of all applications.
 
 5. Click the "Stop Translation" button to stop the translation process.
+
+6. To customize the subtitle overlay, click the "Settings" button and adjust the font, color, and other options as desired.
 
 ## Known Issues
 
