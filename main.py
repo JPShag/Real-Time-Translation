@@ -4,13 +4,16 @@ import queue
 import pyaudio
 import numpy as np
 import logging
+import json
 from scipy.signal import butter, lfilter
 import azure.cognitiveservices.speech as speechsdk
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QComboBox, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+CONFIG_FILE = 'config.json'
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyquist = 0.5 * fs
@@ -34,6 +37,7 @@ class TranslatorApp(QWidget):
         self.initUI()
         self.running = False
         self.audio_queue = queue.Queue()
+        self.load_config()
 
     def initUI(self):
         self.setWindowTitle('Real-Time Translator')
@@ -60,12 +64,18 @@ class TranslatorApp(QWidget):
         self.output_language.setPlaceholderText('es-ES')
         self.output_language.setToolTip('Enter the language code for the output language (e.g., es-ES for Spanish)')
         
+        self.audio_device_label = QLabel('Audio Device:', self)
+        self.audio_device_combo = QComboBox(self)
+        self.populate_audio_devices()
+        
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.input_language_label)
         layout.addWidget(self.input_language)
         layout.addWidget(self.output_language_label)
         layout.addWidget(self.output_language)
+        layout.addWidget(self.audio_device_label)
+        layout.addWidget(self.audio_device_combo)
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
         layout.addWidget(self.status_label)
@@ -78,10 +88,43 @@ class TranslatorApp(QWidget):
         self.subtitle_overlay.setAlignment(Qt.AlignCenter)
         self.subtitle_overlay.show()
 
+    def populate_audio_devices(self):
+        p = pyaudio.PyAudio()
+        self.audio_device_combo.clear()
+        for i in range(p.get_device_count()):
+            device_info = p.get_device_info_by_index(i)
+            if device_info.get('hostApi') == p.get_host_api_info_by_type(pyaudio.paWASAPI)['index']:
+                self.audio_device_combo.addItem(device_info.get('name'), i)
+        p.terminate()
+
+    def load_config(self):
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                config = json.load(f)
+                self.input_language.setText(config.get('input_language', 'en-US'))
+                self.output_language.setText(config.get('output_language', 'es-ES'))
+                audio_device_index = config.get('audio_device_index', -1)
+                if audio_device_index != -1:
+                    self.audio_device_combo.setCurrentIndex(audio_device_index)
+        except FileNotFoundError:
+            logging.warning("Config file not found. Using default settings.")
+        except json.JSONDecodeError:
+            logging.error("Error decoding config file. Using default settings.")
+
+    def save_config(self):
+        config = {
+            'input_language': self.input_language.text(),
+            'output_language': self.output_language.text(),
+            'audio_device_index': self.audio_device_combo.currentIndex()
+        }
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(config, f)
+
     def start_translation(self):
         self.running = True
         self.status_label.setText('Status: Running')
         logging.info("Translation started.")
+        self.save_config()
         self.capture_thread = threading.Thread(target=self.capture_audio)
         self.capture_thread.start()
         self.translation_thread = threading.Thread(target=self.translate_continuously)
@@ -116,7 +159,7 @@ class TranslatorApp(QWidget):
         p = pyaudio.PyAudio()
 
         try:
-            device_index = self.get_wasapi_device_index()
+            device_index = self.audio_device_combo.currentData()
             if device_index is None:
                 raise Exception("WASAPI loopback device not found.")
             
@@ -143,19 +186,6 @@ class TranslatorApp(QWidget):
         except Exception as e:
             logging.error(f"Error in audio capture: {str(e)}")
             self.show_error_message(f"Error in audio capture: {str(e)}")
-
-    def get_wasapi_device_index(self):
-        # Get the index of the WASAPI loopback device
-        p = pyaudio.PyAudio()
-        device_index = None
-        for i in range(p.get_device_count()):
-            device_info = p.get_device_info_by_index(i)
-            if (device_info.get('name') == 'Speaker (Realtek High Definition Audio)' and
-                    device_info.get('hostApi') == p.get_host_api_info_by_type(pyaudio.paWASAPI)['index']):
-                device_index = i
-                break
-        p.terminate()
-        return device_index
 
     def translate_continuously(self):
         while self.running:
