@@ -6,7 +6,7 @@ import numpy as np
 import logging
 from scipy.signal import butter, lfilter
 import azure.cognitiveservices.speech as speechsdk
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QPushButton, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt
 
 # Configure logging
@@ -53,10 +53,12 @@ class TranslatorApp(QWidget):
         self.input_language_label = QLabel('Input Language:', self)
         self.input_language = QLineEdit(self)
         self.input_language.setPlaceholderText('en-US')
+        self.input_language.setToolTip('Enter the language code for the input language (e.g., en-US for English)')
         
         self.output_language_label = QLabel('Output Language:', self)
         self.output_language = QLineEdit(self)
         self.output_language.setPlaceholderText('es-ES')
+        self.output_language.setToolTip('Enter the language code for the output language (e.g., es-ES for Spanish)')
         
         layout = QVBoxLayout()
         layout.addWidget(self.label)
@@ -96,6 +98,13 @@ class TranslatorApp(QWidget):
         self.label.setText(text)
         self.subtitle_overlay.setText(text)
 
+    def show_error_message(self, message):
+        error_dialog = QMessageBox()
+        error_dialog.setIcon(QMessageBox.Critical)
+        error_dialog.setText(message)
+        error_dialog.setWindowTitle("Error")
+        error_dialog.exec_()
+
     def capture_audio(self):
         CHUNK = 1024
         FORMAT = pyaudio.paInt16
@@ -107,13 +116,16 @@ class TranslatorApp(QWidget):
         p = pyaudio.PyAudio()
 
         try:
-            # Use WASAPI loopback for capturing system audio
+            device_index = self.get_wasapi_device_index()
+            if device_index is None:
+                raise Exception("WASAPI loopback device not found.")
+            
             stream = p.open(format=FORMAT,
                             channels=CHANNELS,
                             rate=RATE,
                             input=True,
                             frames_per_buffer=CHUNK,
-                            input_device_index=self.get_wasapi_device_index(),
+                            input_device_index=device_index,
                             as_loopback=True)
             logging.info("Audio capture started using WASAPI loopback.")
 
@@ -130,7 +142,7 @@ class TranslatorApp(QWidget):
             logging.info("Audio capture stopped.")
         except Exception as e:
             logging.error(f"Error in audio capture: {str(e)}")
-            self.update_translation(f"Error in audio capture: {str(e)}")
+            self.show_error_message(f"Error in audio capture: {str(e)}")
 
     def get_wasapi_device_index(self):
         # Get the index of the WASAPI loopback device
