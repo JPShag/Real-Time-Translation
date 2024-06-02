@@ -42,32 +42,39 @@ class TranslatorApp(QWidget):
     def initUI(self):
         self.setWindowTitle('Real-Time Translator')
         self.setGeometry(100, 100, 800, 600)
-        
+
         self.label = QLabel('Translation will appear here', self)
         self.label.setWordWrap(True)
-        
+        self.label.setStyleSheet("font-size: 16px; margin-bottom: 20px;")
+
         self.start_button = QPushButton('Start Translation', self)
         self.start_button.clicked.connect(self.start_translation)
-        
+        self.start_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: green; color: white;")
+
         self.stop_button = QPushButton('Stop Translation', self)
         self.stop_button.clicked.connect(self.stop_translation)
+        self.stop_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: red; color: white;")
 
         self.status_label = QLabel('Status: Stopped', self)
-        
+        self.status_label.setStyleSheet("font-size: 14px; color: red;")
+
         self.input_language_label = QLabel('Input Language:', self)
         self.input_language = QLineEdit(self)
         self.input_language.setPlaceholderText('en-US')
         self.input_language.setToolTip('Enter the language code for the input language (e.g., en-US for English)')
-        
+        self.input_language.setStyleSheet("font-size: 14px; padding: 5px;")
+
         self.output_language_label = QLabel('Output Language:', self)
         self.output_language = QLineEdit(self)
         self.output_language.setPlaceholderText('es-ES')
         self.output_language.setToolTip('Enter the language code for the output language (e.g., es-ES for Spanish)')
-        
+        self.output_language.setStyleSheet("font-size: 14px; padding: 5px;")
+
         self.audio_device_label = QLabel('Audio Device:', self)
         self.audio_device_combo = QComboBox(self)
         self.populate_audio_devices()
-        
+        self.audio_device_combo.setStyleSheet("font-size: 14px; padding: 5px;")
+
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.input_language_label)
@@ -80,7 +87,7 @@ class TranslatorApp(QWidget):
         layout.addWidget(self.stop_button)
         layout.addWidget(self.status_label)
         self.setLayout(layout)
-        
+
         # Subtitle overlay setup
         self.subtitle_overlay = QLabel('', self, flags=Qt.WindowStaysOnTopHint)
         self.subtitle_overlay.setGeometry(0, 0, 800, 100)
@@ -123,6 +130,7 @@ class TranslatorApp(QWidget):
     def start_translation(self):
         self.running = True
         self.status_label.setText('Status: Running')
+        self.status_label.setStyleSheet("color: green;")
         logging.info("Translation started.")
         self.save_config()
         self.capture_thread = threading.Thread(target=self.capture_audio)
@@ -135,6 +143,7 @@ class TranslatorApp(QWidget):
         self.capture_thread.join()
         self.translation_thread.join()
         self.status_label.setText('Status: Stopped')
+        self.status_label.setStyleSheet("color: red;")
         logging.info("Translation stopped.")
 
     def update_translation(self, text):
