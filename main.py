@@ -8,11 +8,7 @@ import json
 from scipy.signal import butter, lfilter
 import azure.cognitiveservices.speech as speechsdk
 from PyQt5.QtWidgets import QApplication
-<<<<<<< HEAD
 from real_time_translator.gui import TranslatorApp
-=======
-from gui import TranslatorApp
->>>>>>> c46d0b96093e30607a181ef9b6d940da3a6417f0
 
 CONFIG_FILE = 'config.json'
 
@@ -150,20 +146,10 @@ class TranslatorLogic:
             logging.error(f"Error in speech recognition: {str(e)}")
             return f"Error in speech recognition: {str(e)}"
 
-<<<<<<< HEAD
-def main():
-=======
 if __name__ == "__main__":
->>>>>>> c46d0b96093e30607a181ef9b6d940da3a6417f0
     app = QApplication(sys.argv)
     logic = TranslatorLogic()
     ex = TranslatorApp(logic)
     logic.app = ex
     ex.show()
     sys.exit(app.exec_())
-<<<<<<< HEAD
-
-if __name__ == "__main__":
-    main()
-=======
->>>>>>> c46d0b96093e30607a181ef9b6d940da3a6417f0
